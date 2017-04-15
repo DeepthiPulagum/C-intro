@@ -1,0 +1,68 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Xml;
+
+public partial class client_job_emp_actions : System.Web.UI.Page
+{
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        string jobID = Request.Form["jobID"];
+        if (Request.Form["approve"] != null)
+        {
+            string employee_id = (Request.Form["approve"].Substring(Request.Form["approve"].Length - 6));
+            if (Request.Form["chkapprove"] == "yes")
+            {
+                API.Service approve = new API.Service();
+                // API.Service approve = new API.Service();
+                XmlDocument _xmlDoc1 = new XmlDocument();
+                _xmlDoc1.LoadXml("<XML>" + approve.candidate_approve(Session["Email"].ToString(), Session["P@ss"].ToString(), Session["UserID"].ToString(), employee_id.ToString(), "1").InnerXml + "</XML>");
+                XmlNodeList ea = _xmlDoc1.SelectNodes("XML/RESPONSE");
+                Response.Redirect("Client_Job_Details.aspx?wopen=Y&p=VW&jobID=" + jobID);
+            }
+            else
+            {
+                string intw_time = Request.Form["DDLT1"];
+                string intw_date = Request.Form["DP1"];
+                DateTime int_date = DateTime.ParseExact(intw_date, "M'/'d'/'yyyy", null);
+
+                API.Service int_req = new API.Service();
+                // API.Service int_req = new API.Service();
+                XmlDocument _xmlDoc = new XmlDocument();
+                // _xmlDoc.LoadXml("<XML>" + int_req.interview_request(Session["Email"].ToString(), Session["P@ss"].ToString(), Session["UserID"].ToString(), Session["ClientID"].ToString(), employee_id.ToString(), int_date, intw_time).InnerXml + "</XML>");
+                _xmlDoc.LoadXml("<XML>" + int_req.interview_request(Session["Email"].ToString(), Session["P@ss"].ToString(), Session["UserID"].ToString(), employee_id.ToString(), "1", int_date, intw_time).InnerXml + "</XML>");
+                XmlNodeList ea = _xmlDoc.SelectNodes("XML/RESPONSE");
+                Response.Redirect("Client_Job_Details.aspx?wopen=Y&p=VW&jobID="+jobID);
+            }
+        }
+        if (Request.Form["Reject"] != null)
+        {
+            string employee_id = (Request.Form["Reject"].Substring(Request.Form["Reject"].Length - 6));
+            string reason = Request.Form["txtComments1"];
+            API.Service int_req = new API.Service();
+            //  API.Service int_req = new API.Service();
+            XmlDocument _xmlDoc = new XmlDocument();
+            _xmlDoc.LoadXml("<XML>" + int_req.reject_candidate(Session["Email"].ToString(), Session["P@ss"].ToString(), Session["UserID"].ToString(), employee_id.ToString(), "1", reason, "1").InnerXml + "</XML>");
+            XmlNodeList ea = _xmlDoc.SelectNodes("XML/RESPONSE");
+            Response.Redirect("Client_Job_Details.aspx?wopen=Y&p=VW&jobID=" + jobID);
+        }
+        if (Request.Form["more"] != null)
+        {
+            string employee_id = (Request.Form["more"].Substring(Request.Form["more"].Length - 6));
+            string moreinf = Request.Form["txtComments2"];
+
+            API.Service more_info = new API.Service();
+            //API.Service more_info = new API.Service();
+            XmlDocument _xmlDoc = new XmlDocument();
+            _xmlDoc.LoadXml("<XML>" + more_info.more_info_candidate(Session["Email"].ToString(), Session["P@ss"].ToString(), Session["ClientID"].ToString(), employee_id.ToString(), moreinf).InnerXml + "</XML>");
+            XmlNodeList ea = _xmlDoc.SelectNodes("XML/RESPONSE");
+            Response.Redirect("Client_Job_Details.aspx?wopen=Y&p=VW&jobID=" + jobID);
+
+        }
+
+
+    }
+}
